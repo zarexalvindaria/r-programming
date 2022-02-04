@@ -1,0 +1,155 @@
+<style>
+ td {
+  width: 150px;
+}
+</style>
+---
+title: ANLYTC3 R Homework 2
+author: ZAREX ALVIN DARIA
+output: html_document
+---
+
+#### Instructions 
+
+The due date is 3:00pm 4 Feb 2022. Submit BOTH the Knit HTML file and the Rmd file. 
+
+Fill in the missing code chunks to answer the following questions. You should use a reasonable coding style and comment your code so that it is clear what you are doing. As a rough rule of thumb, expect to add at least one comment to each missing code chunk.
+
+If the question asks for a numerical answer, such as "what fraction of households in the data set satisfy condition X," do not hard code the value from the computation. If the data set changes, your answer should  update automatically. 
+
+Here are two recommended ways that you can report your answer:
+
+**Example Question 1:** In the `cars` data set, what is the average value of the `speed` column?
+
+```{r}
+# take average of mpg$speed, save as variable
+avg.speed = mean(cars$speed)
+```
+
+**Answer:** The average value was `r avg.speed`
+
+**Example Question 1:** In the `ChickWeight` dataset, what was the average weight of the chickens grouped by each diet type?
+
+```{r}
+library(plyr)
+library(knitr) # for the kable() function, which prints data frames as tables:
+
+# group the chickens by diet and take average weight
+avg.weights = ddply(ChickWeight, "Diet", summarize, avg.weight = mean(weight))
+# display the data frame as an easy-to-read table, with 3 significant digits
+kable(avg.weights, digits = 3, col.names = c('Diet', 'Average Weight'))
+```
+
+
+#### Questions 
+
+**Note:** We will assume that the data file `dataset_hw1.csv` is in your working directory.
+
+**Problem 1:** 
+
+Load the CSV file `dataset_hw1.csv` into memory, using the command `read.file()` or `read.csv()` as described in lecture. Save the result as a variable called `expenditures`. 
+
+Hint: You may want to look at the CSV file using another program such as excel to see if the first row is a header. 
+
+```{r}
+# Load the dataset to memory as expenditures
+expenditures <- read.csv('dataset_hw1.csv')
+expenditures
+```
+
+**Problem 2:**
+
+a) How many variables are in the data set? 
+
+b) The column `race.ref.person` describes the race of each respondent. What are the different levels that this column is allowed to take?
+```{r}
+# We don't need this code section -- you are supposed to replace the XXX below with the value. To replace XXX, you have to put an inline code by replacing XXX with `r CODE` where CODE is the R command. For example: The different income class are `r levels(expenditures$income.class)`
+library(sqldf) # Use the sqldf package
+
+# Count the variables/columns in the dataset
+variable.count <- ncol(expenditures)
+
+# Determine the unique values in the races column
+allowable.races <- sqldf("SELECT DISTINCT(`race.ref.person`) AS races FROM expenditures")
+
+```
+
+**ANSWER:** 
+
+a) There are `r variable.count` variables in the data set.
+
+b) The allowable races are: `r as.vector(allowable.races$races)`
+
+**Problem 3:**
+
+What fraction of records in the data set belong to each `race.ref.person`?
+
+```{r}
+# Identify percentage of each race out of total pop, AVG is not working so manual computation was applied. Included fraction and percentage in the result
+sqldf("SELECT 
+          DISTINCT(`race.ref.person`) race,
+          COUNT(`race.ref.person`) || '/' || (SELECT COUNT(*) FROM expenditures) fraction,               CAST(COUNT(`race.ref.person`) AS real)/(SELECT COUNT(*) FROM expenditures) percentage
+      FROM expenditures GROUP BY `race.ref.person`")
+```
+
+**Problem 4:**
+
+Change the `expenditures` data frame so that `race.ref.person` column has only 3 coded types: 
+
+1. black
+2. white
+3. others (all else)
+
+Print the number of records in each `race.ref.person` as a table.
+
+```{r}
+# Use CASE WHEN to limit values to 3 types
+expenditures <- sqldf("
+SELECT race, SUM(count) count FROM
+  (SELECT 
+    CASE 
+      WHEN race IN ('white', 'black') THEN race ELSE 'others (all else)' END AS race,
+    count FROM
+      (SELECT DISTINCT(`race.ref.person`) race, COUNT(`race.ref.person`) count FROM expenditures
+      GROUP BY race)
+  ) GROUP BY race
+")
+expenditures
+
+```
+
+**Problem 5:**
+
+
+What fraction of the general population live in the Midwest, Northeast, South, and West regions of the US? What fraction of those in the 96% income percentile (i.e., the "96%") live in these regions? Do the percentages differ for the general population and the "96%"?
+
+Create a data frame with the following columns:
+
+1. `region`: Midwest, Northeast, South, West, and NA (not everyone reports their region!)
+2. `general.pop`: the percentage of households in `expenditures` in each region
+3. `rich.pop`: the percentage of households whose `income.rank` is greater than 0.96 in each region
+
+(as a sanity check, both the `general.pop` and `rich.pop` columns should sum to 1)
+
+Print this data frame as a table. Hint: you may want to use the function `merge()` to combine two data frames. (see the self-study material for lecture 2)
+
+What are the main differences in the percentages for the general and rich population?
+
+
+```{r}
+# Use sqldf to find the unique regions, calculate the percentage of households per region, and calculate the percentage of rich households per region
+
+expenditures <- read.csv('dataset_hw1.csv') # Overwrite previous change in the expenditures dataframe
+
+sqldf("SELECT DISTINCT(region) region,
+          CAST(COUNT(region) as real)/(SELECT COUNT(*) FROM expenditures) `general.pop`,   
+          t2.`rich.pop` FROM expenditures t1
+      LEFT JOIN 
+      (SELECT DISTINCT(region) reg, CAST(COUNT(region) as real)/(SELECT COUNT(*) 
+        FROM expenditures WHERE `income.rank` > 0.96) `rich.pop` 
+        FROM expenditures WHERE `income.rank` > 0.96 
+        GROUP BY 1) t2 
+      ON t1.region = t2.reg GROUP BY 1
+      ")
+```
+In the general population, it is noticeable that the South region has the most households while in the rich population, the West region has the most rich households.
