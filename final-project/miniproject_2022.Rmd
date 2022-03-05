@@ -43,3 +43,53 @@ The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- n
 #### Begin your report:
 
 
+### Introduction
+
+
+### Analysis
+```{r}
+library("MASS")
+library(ggplot2)
+library(plyr)
+
+#nlschools
+```
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# language score and verbal IQ
+ggplot(data = nlschools, mapping = aes(x = lang, y = IQ)) + geom_point(aes()) + 
+  geom_jitter(width = .5, size=1) +
+  geom_smooth(model=lm) +
+    labs(subtitle="Language Score vs. IQ", 
+       x="Language",
+       y="IQ",
+       title="Language + IQ", 
+       caption="Source: nlschools")
+
+
+```
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# language score and socio-economic status
+ggplot(data = nlschools, mapping = aes(x = lang, y = SES)) + geom_point(aes()) + 
+  geom_smooth(model=lm) +
+    labs(subtitle="Language Score vs. SES", 
+       x="Language", 
+       y="SES", 
+       title="Language + SES", 
+       caption="Source: nlschools")
+```
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# language score and COMB
+ggplot(data = nlschools, mapping = aes(x = lang, y = COMB)) + geom_point(aes()) + 
+  geom_smooth(model=lm) +
+    labs(subtitle="Language Score vs. COMB",
+       x="Language", 
+       y="COMB", 
+       title="Language + COMB", 
+       caption="Source: nlschools")
+
+```
+
+### Conclusion

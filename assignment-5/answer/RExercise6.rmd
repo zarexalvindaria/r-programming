@@ -1,0 +1,117 @@
+---
+title: ANLYTC3 R Exercises 6
+author: Zarex Alvin Daria
+output: html_document
+---
+
+Here are some libraries that you may need.
+```{r}
+library(ggplot2)
+library(plyr)
+library(reshape2)
+```
+
+We will use the data file `binomial_data.csv`. Let's load it as the data frame `binomial.data`:
+
+```{r}
+binomial.data = read.csv(file = 'binomial_data.csv', header = TRUE)
+```
+
+Each row represents the number of some attribute in a fictional county. There are 10001 rows and 2 columns:
+
+* `population`: the population of the county
+* `actual`: the number of observed people with the attribute.
+
+Overall, about `0.002` of the total population in the entire data set has the attribute.
+
+Problem 1: 
+
+Confirm that the overall per capita rate is about `0.002`:
+
+```{r}
+# Compute overall per capita rate
+overall.rate = sum(binomial.data$actual)/sum(binomial.data$population)
+overall.rate
+
+```
+
+Problem 2:
+
+Compute the observed per capita rates, and plot them as a function of the population. 
+
+Do the smallest populations have the highest variance in the per capita rates? 
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# Determine each country's per capita rate
+binomial.data = mutate(binomial.data, per.capita = actual / population)
+
+ggplot(data = binomial.data, mapping = aes(x = population, y = per.capita)) + geom_point()
+```
+
+ANS: 
+As seen on the graph, the higher the population, the higher the difference between the per capita value is and the lower the population, the more uniform the per capita is.
+
+
+Problem 3:
+
+Consider the null hypothesis that every county is actually a binomial random variable with probability parameter `p= 0.002`. 
+
+Compute the expected number of people with the attributes under this null hypothesis. Also compute the standard deviation under the null, and the residual and standardized residuals for each county.
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# fill in
+binomial.data = mutate(binomial.data, 
+                       expected = population * overall.rate,
+                       st.dev = sqrt(expected*(1-overall.rate)),
+                       residual = actual - expected,
+                       std.residual = residual / st.dev)
+ggplot(data = binomial.data, mapping = aes(x = population, y = per.capita)) + geom_point()
+```
+
+Problem 4:
+
+Add a reference line to the plot in problem 2, denoting for which counties the standardized residual is above 3. Label or title your plot appropriately so that readers will know what the reference line signifies.
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# fill in
+
+ggplot(data = binomial.data, mapping = aes(x = population, y = per.capita)) + geom_point() + 
+  geom_line(mapping=aes(y = (expected + 3*st.dev)/population), color='green', size = 2) +
+  labs(title = "Residual\n", color = "Legend Title\n") + 
+  scale_color_manual(labels = c(">3 residuals")) +
+  theme_bw()
+```
+
+
+Problem 5:
+
+How many counties had a standardized residual exceeding 3? How many would you expect if the null hypothesis was actually correct? 
+
+Consider the following two possibilities:
+
+a) every county has about the same risk parameter `p`. 
+b) some counties have higher risk parameters than others
+
+Which do you think is the better hypothesis for this data set?
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+
+# Reference 
+binomial.data = mutate(binomial.data, cutoff = (expected + 3*st.dev)/population, above.cutoff = per.capita > cutoff)
+
+
+# Computing the number of residual with value greater than 3
+residual.count <- sum(binomial.data['residual'] > 3)
+```
+
+ANS: 
+How many counties had a standardized residual exceeding 3?
+There are `r residual.count` counties with greater than 3 residual.
+
+How many would you expect if the null hypothesis was actually correct? Consider the following two possibilities:
+
+a) every county has about the same risk parameter `p`. 
+
+
+b) some counties have higher risk parameters than others
+ 
