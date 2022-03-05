@@ -1,0 +1,121 @@
+<style>
+ td {
+  width: 150px;
+}
+</style>
+---
+title: ANLYTC3 Homework 2
+author: YOUR NAME HERE
+output: html_document
+---
+
+#### Instructions 
+
+The due date is 03:00pm 15 Feb 2022 (Tue). Submit BOTH the Knit HTML file and the Rmd file.
+
+Follow all instructions from previous homework regarding commenting and reporting your answers.
+
+Additionally, your plots should be presentable to a professional audience.
+
+* Add axis labels, legend labels, and titles. Captialize the important words in them.
+* Categorical data should be ordered for ease of visualization (usually not alphabetical order)
+* Text shouldn't be overly large or tiny.
+* Adjust the `fig.width`, `fig.height`, and `dpi` agruments so that the plot is reasonably sized.
+* The plot type and layout should be chosen so that the data is easy to read.
+* Adjust marker size or jitter to mitigate overplotting 
+
+Note 2: For the comprehension questions at the end of questions 1, 2, and 4, you may "hard code" your answers as simple text.
+
+#### Preliminaries
+
+We'll use the data file `hw2data.rda`, which should be in the same directory as this markdown file (which should also be your working directory)
+```{r}
+# load hw2data.rda from the working directory
+load('hw2data.rda')
+```
+
+Unlike a CSV file, which only contains one data frame, an `.rda` file contains multiple R variables, and can only be opened by R. You should have the following data frames, all taken from the Consumer Expenditure Survey:
+
+1. `expenditure`: A data frame of expenditure amounts by category for 4000 households
+2. `household`: A data frame of household and demographic information (for the same 4000 households).
+3. `income`: A data frame of income and job information (for the same 4000 households)
+
+The column names for `expenditure`, `household`, and `income` are hard to decipher. So there are 3 more data frames, with explanations for the column names.
+
+4. `expenditure.key`: Description of each column in `expenditure`
+5. `household.key`: Description of each column in `household`
+6. `income.key`: Description of each column in `income`
+
+Finally, there are two more data frames:
+
+7. `item.purchases`: Each row corresponds to a specific itemized purchase made by the households. The household ID, the cost, and a `ucc` code giving a description of the purchase is included.
+8. `item.key`: Descriptions of the different `ucc` codes
+
+Note that in `expenditure.key`, several of the expenditure categories have numbers, giving the "level" of the category. For example `food (1)` can be divided into `food at home (2)` and `food away from home (2)`. The latter subcategory can be further divided into `food excluding meals as pay (3)` and `meals as pay (3)`.
+
+#### Questions 
+
+
+**Problem 1:** 
+
+Make a dot chart showing the 25 most common itemized purchases, and how often they were reported in the data frame `item.purchases`. You should use the actual category descriptions in your chart, not the UCC codes.
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+# add code here with comments
+```
+
+Were there any categories that you expected to see, but didn't?
+
+**Problem 2:**
+
+Make the same dot chart as before, but group the data into 10 equally sized groups according to the age of the reference person. For each age group, show the same 25 categories as you did in problem 1. 
+
+Use `facet_wrap()` or `facet_grid()` to show your results in 10 charts, one per age group. 
+
+To make comparisons easier, in each of your plots add a reference line showing the number of purchases for each category, averaged over all age groups. 
+
+(Hint: You can do this by adding a `geom_line()` which has its own data frame and mapping. If this data frame doesn't include the faceting variable, the line is plotted in all facets.)
+
+```{r fig.width=10, fig.height=12, dpi=100, fig.align='center'}
+# add code here with comments
+```
+
+For the youngest age group, which item categories are purchased with above average frequency? For the oldest age group, which item categories are puchased with above average frequency?
+
+**Problem 3a:**
+
+Create a data frame containing the age, job categories, and hours worked/week of the reference person who answered the survey, and also their spouse if there is one. So your data frame will have one row for each reference person, plus one additional row for each spouse. Your data frame should have three columns, `age`, `job`, and `hours.worked`.
+
+If the age of the spouse is NA, you may assume the household is single. 
+
+The age of the reference person and spouse are contained in the fields `age_ref` and `age2` of the data frame `household`. The job categories of each person are `occucod1` and `occucod2`, in the data frame `income`. The hours worked/week of each person are `inc_hrs1` and `inc_hrs2`, also in `income`.
+
+Hint: The command `rbind(df1, df2)` will manually stack data frames `df1` and `df2` on top of each other. However, they need to have the same column names.
+
+```{r}
+# add code here with comments
+```
+
+What is the mean age and hours worked for each job category? Produce a table or print the data frame. Order the job categories by the mean age
+
+```{r}
+# add code here with comments
+```
+
+**Problem 3b:**
+
+Use `geom_violin()` to show the age distribution of each job category. Additionally, plot the raw data points on top of the violin plots for reference. You may want to read the online ggplot2 documentation for `geom_violin()`. 
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+# add code here with comments
+```
+
+**Problem 4**
+
+Using the data frame you made in Problem 3a, make a plot showing the average age of each job category, and with error bars or point ranges indicate +/- 2 standard deviations (`stat_summary()` with the function `mean_sdl()` can compute this for you). Leave out the fields with missing job category.
+
+```{r fig.width=8, fig.height=6, dpi=100, fig.align='center'}
+# add code here with comments
+```
+
+Which job category had the highest average age? Which job category had the highest variance in reported age? 
+

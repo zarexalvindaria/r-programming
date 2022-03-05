@@ -1,0 +1,45 @@
+---
+title: ANLYTC3 Mini-Project
+output: html_document
+---
+
+#### Instructions 
+
+The data set `nlschools` (in the `MASS` library, use `data(nlschools, package = "MASS")` to load in the data) contains the following records for 2287 students in the Netherlands (see `?nlschools` for more information) 
+
+* `lang`: their test score on a language exam
+* `IQ`: their verbal IQ
+* `class`: the ID number for their classroom
+* `GS`: the number of students in each class
+* `SES`: the socio-economic status of their family
+* `COMB`: was the student in a multi-grade class? (0=no, 1=yes)
+
+Your task is to explore and describe this data set. You should use both models and visualization. You should use your judgement as to what are the most important aspects of the data to highlight; however, the following questions are of particular interest:
+
+1. Are there descrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
+2. When did students perform better or worse on the language exam? Describe which variables had the most important effects. 
+3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.
+
+Always think about what you are doing -- blindly replicating the lectures may not result in the best analysis! Every data set is different, so you may need to use your judgement on the right thing to do. Your goal is to understand the data as best as your can, particularly in regards to questions 1-3 above.
+
+NOTE: Since this is an observational study, we'll understand that any claims about causality should be taken mainly as speculation or hypothesis. Usage of language regarding the "effects" of a variable on the outcome of interest will be understood to be informal, so we won't penalize you. (This will probably make the report much easier to write.)
+
+#### Presentation Requirements
+
+Your output should be this rmarkdown file, which should compile into a report that gives your analysis. 
+
+The report should be understandable. One possible outline is: 
+
+1. Intro: what are your main steps, and what are your findings?
+2. Analysis: Describe each step and why you did it, show the R code and results, then comment on the results.
+3. Conclusions: recap and summarize 
+
+Typically, it's best to do step 2 first, and then write step 1 and 3 after you are finished. Bulleted lists may be especially helpful for these parts. 
+
+Code should be clearly commented. All plots should be presentable and properly labeled. Mitigate overplotting whenever possible. When building a model, explain each step so that we know why you are doing it. 
+
+The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- no late days may be used. Submit this Rmd file on Canvas Don't submit additional files.
+
+#### Begin your report:
+
+

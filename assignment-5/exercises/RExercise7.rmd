@@ -1,0 +1,58 @@
+---
+title: ANLYTC3 R Exercises 7
+author: YOUR NAME HERE
+output: html_document
+---
+
+Here are some libraries that you may need.
+```{r}
+library(ggplot2)
+library(plyr)
+library(reshape2)
+library(knitr)
+library(binom) # for binom.confint()
+```
+
+We will use the data files `county_data.csv` and `county_ggplot.rda`, which were part of the lecture materials.
+
+```{r}
+county.data = read.csv(file = 'county_data.csv', header=TRUE)
+load('county_ggplot.rda')
+```
+
+Problem 1: 
+
+Using `binom.confint()`, compute 95% confidence confidence intervals for the per capita rate of infant deaths in each county. Set the argument `method = "exact"` in your function call.
+
+```{r}
+# fill in
+```
+
+Problem 2:
+
+What are the counties with the top ten lower bounds for the infant death per capita rate? Make a table using the `kable()` command. Be sure to choose the number of digits shown in the table appropriately.
+
+```{r}
+# fill in
+```
+
+Problem 3:
+
+Make a choropleth plot showing the lower bound on the per capita infant deaths. Choose the color scale so that the midpoint is at the US per capita rate for infant deaths.
+
+```{r, fig.height = 6, fig.width = 10, dpi = 80}
+# fill in
+```
+
+Problem 4: 
+
+Use 95% confidence intervals to identify the counties with extremely LOW per capita rates of infant deaths. (We've only looked at counties with high rates so far. You may need to think about how to do this)
+
+Make a table showing your top ten selections. 
+
+
+```{r, fig.height = 6, fig.width = 10, dpi = 80}
+# fill in
+```
+
+

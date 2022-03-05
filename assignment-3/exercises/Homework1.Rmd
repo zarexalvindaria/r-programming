@@ -1,0 +1,63 @@
+---
+title: ANLYTC3 R Homework 1
+author: YOUR NAME HERE
+output: html_document
+---
+The due date is 3:00pm 4 Feb 2022. Submit BOTH the Knit HTML file and the Rmd file. 
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit HTML** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r}
+# create a vector with 4 numeric elements:
+vec = c(4, 8, 13, 16)
+# what is the sum of the elements?
+a = sum(vec)
+a
+```
+
+You can also embed plots, for example:
+
+```{r}
+# these variables are badly named! This plot could be anything.
+vec2 = c(3, 3, 8, 8)
+vec
+plot( x = vec, y = vec2)
+```
+
+Here are some questions for you to complete:
+
+1. Can you find the standard deviation of the vector `vec2`? (Hint: the command for standard deviation is in the self-study material for lecture 1, under "Commands that operate on vectors")
+
+```{r}
+# add your code here #
+a <- sd(vec2)
+a
+```
+
+2. Use the `c()` command to create a vector containing the text elements "MISM", "MSPPM", and "EPP". Call this vector `department`.
+
+```{r}
+# add your code here #
+
+```
+
+Questions 3-4 use the `Orange` dataset, which comes built into R. Type `?Orange` to find out about the dataset, which contains the growth history of five different trees. (This brings up a help page. It won't show up in this R markdown file) You can look at it by typing `View(Orange)` in your console window. 
+
+3. Use subset to extract the growth records corresponding to tree number 4. Call this data set `Orange.subset`
+
+```{r}
+# add your code here #
+
+```
+
+
+4. Make a plot showing the `circumference` of tree number 4 as a function of its `age`.
+
+```{r}
+# add your code here #
+
+```
+
+

@@ -1,0 +1,41 @@
+---
+title: Exercises Day 3
+author: YOUR NAME HERE
+output: html_document
+---
+
+**Note:** We will assume that the data file `expenditures_lec2.csv` is in your working directory.
+
+Problem 1: Load the CSV file `expenditures_lec2.csv` into memory, using the command `read.file()` or `read.csv()` as described in lecture. Save the result as a variable.
+
+```{r}
+# Fill in, with comments added:
+
+```
+
+Problem 2: Create a scatter plot showing how `healthcare` costs behave as a function of the `age.respondent` variable. Don't forget to load any libraries you need!
+
+```{r}
+# Fill in, with comments added:
+
+```
+
+Problem 3: Create a bar chart showing how many rows in the data set are in each `region`. 
+
+```{r'}
+# Fill in, with comments added:
+
+```
+
+Problem 4: Use functions from lecture 2 (such as the `plyr` package) to compute the fraction (or percentage) of households that are in each `region`, instead of the raw counts. Then plot this as a bar chart.
+
+```{r}
+# Fill in, with comments added:
+
+```
+
+Problem 5: Remake the plot of problem 2, showing `healthcare` costs, but this time color-code the points to distinguish between those which spent over and under $3000 on health care.
+
+```{r fig.width=6, fig.height=3, dpi=100, fig.align='center'}
+# Fill in, with comments added:
+```
