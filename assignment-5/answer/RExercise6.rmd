@@ -49,7 +49,7 @@ ggplot(data = binomial.data, mapping = aes(x = population, y = per.capita)) + ge
 ```
 
 ANS: 
-As seen on the graph, the higher the population, the higher the difference between the per capita value is and the lower the population, the more uniform the per capita is.
+As seen on the graph, the higher the population, the closer the per capita value is between county and the lower the population, the more the difference between the per capita value is per county.
 
 
 Problem 3:
@@ -59,13 +59,17 @@ Consider the null hypothesis that every county is actually a binomial random var
 Compute the expected number of people with the attributes under this null hypothesis. Also compute the standard deviation under the null, and the residual and standardized residuals for each county.
 
 ```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
-# fill in
+# Compute the standard deviation under the null hypothesis, residual and standard residual
 binomial.data = mutate(binomial.data, 
                        expected = population * overall.rate,
                        st.dev = sqrt(expected*(1-overall.rate)),
                        residual = actual - expected,
                        std.residual = residual / st.dev)
+
+binomial.data
+
 ggplot(data = binomial.data, mapping = aes(x = population, y = per.capita)) + geom_point()
+
 ```
 
 Problem 4:
@@ -73,13 +77,11 @@ Problem 4:
 Add a reference line to the plot in problem 2, denoting for which counties the standardized residual is above 3. Label or title your plot appropriately so that readers will know what the reference line signifies.
 
 ```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
-# fill in
+# Add reference line to the plot
 
 ggplot(data = binomial.data, mapping = aes(x = population, y = per.capita)) + geom_point() + 
   geom_line(mapping=aes(y = (expected + 3*st.dev)/population), color='green', size = 2) +
-  labs(title = "Residual\n", color = "Legend Title\n") + 
-  scale_color_manual(labels = c(">3 residuals")) +
-  theme_bw()
+  labs(title = "Residual\n")
 ```
 
 
@@ -100,18 +102,33 @@ Which do you think is the better hypothesis for this data set?
 binomial.data = mutate(binomial.data, cutoff = (expected + 3*st.dev)/population, above.cutoff = per.capita > cutoff)
 
 
-# Computing the number of residual with value greater than 3
-residual.count <- sum(binomial.data['residual'] > 3)
+# Count the counties with standard residual greater than 3
+std.residual.count <- sum(binomial.data['std.residual'] > 3)
+std.residual.count
+
+# Count the counties with equal to or lower than the residual value
+residual.count_correct <- sum(binomial.data['residual'] <= 0)
+residual.count_correct
+
+# Count the counties with higher residual value
+residual.count_above <- sum(binomial.data['residual'] > 0)
+residual.count_above
+
+
+#st.dev.count <- sum(binomial.data['st.dev'] == p)
+#residual.count <- sum(binomial.data['residual'] > p)
 ```
 
 ANS: 
 How many counties had a standardized residual exceeding 3?
-There are `r residual.count` counties with greater than 3 residual.
+There are `r std.residual.count` counties with greater than 3 standard residual.
 
 How many would you expect if the null hypothesis was actually correct? Consider the following two possibilities:
 
-a) every county has about the same risk parameter `p`. 
+a) every county has about the same risk parameter `p`.
+I would 
+There are `r residual.count_correct` counties with equal to or lower than the null hypothesis between county.
 
 
 b) some counties have higher risk parameters than others
- 
+There are `r residual.count_above` counties with higher risk parameters than others.

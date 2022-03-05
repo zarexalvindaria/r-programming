@@ -1,6 +1,6 @@
 ---
 title: ANLYTC3 R Exercises 7
-author: YOUR NAME HERE
+author: Zarex Alvin Daria
 output: html_document
 ---
 
