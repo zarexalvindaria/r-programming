@@ -45,6 +45,7 @@ The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- n
 library("MASS")
 library(ggplot2)
 library(plyr)
+library(sqldf)
 
 #nlschools
 ```
@@ -61,7 +62,10 @@ library(plyr)
 3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.
 
 
+Language Score and Verbal IQ
+
 ```{r}
+#nlschools
 p1 <- ggplot(data = nlschools, mapping = aes(x = IQ , y = lang))
 
 # language score and verbal IQ
@@ -77,9 +81,7 @@ p1 +
 ```
 
 
-
-
-
+Language Score and SES
 
 ```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
 # language score and SES
@@ -96,21 +98,89 @@ p2 +
        caption="Source: nlschools")
 ```
 
-
+Language Score and COMB
 
 ```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
-# language score and SES grouped by COMB
-p2 +
+# language score and COMB
+p3 <-  ggplot(data = nlschools, mapping = aes(x = COMB, y = lang))
+
+p3 +
   geom_point(aes()) +
-  geom_line(aes(group = COMB)) +
   geom_smooth(show.legend = TRUE, method = 'gam') +
-  geom_jitter(width = .5, size=1) +
-    labs(subtitle="Language Score vs. SES by COMB", 
-       x="IQ",
+  #geom_jitter(width = .5, size=1) +
+    labs(subtitle="Language Score vs. COMB", 
+       x="COMB",
        y="Language",
-       title="Language + SES by COMB", 
+       title="Language + COMB", 
        caption="Source: nlschools")
 
+```
+
+Language Score and GS
+
+```{r fig.width=6, fig.height = 4, dpi = 70, fig.align='center'}
+# language score and COMB
+p4 <-  ggplot(data = nlschools, mapping = aes(x = GS, y = lang))
+
+p4 +
+  geom_point(aes()) +
+  geom_smooth(show.legend = TRUE, method = 'gam') +
+  geom_jitter(width = .5, size=1) +
+    labs(subtitle="Language Score vs. GS", 
+       x="GS",
+       y="Language",
+       title="Language + GS", 
+       caption="Source: nlschools")
+
+```
+
+#### Advance
+
+```{r}
+# language score and verbal IQ
+point <- geom_point(aes(colour = factor(COMB)))
+smoth <- geom_smooth(show.legend = TRUE, method = 'gam' , aes(colour = factor(COMB)))
+
+
+p1 + 
+  point +
+  smooth +
+    labs(
+       x="IQ",
+       y="Language Score",
+       title="Language + IQ", 
+       caption="Source: nlschools")
+```
+
+```{r}
+# language score and verbal IQ
+p2 + 
+  point +
+  smooth +
+    labs(
+       x="IQ",
+       y="Language Score",
+       title="Language + SES", 
+       caption="Source: nlschools")
+```
+
+```{r}
+# language score and verbal IQ
+p3 + 
+  point +
+  smooth +
+    labs(
+       x="IQ",
+       y="Language Score",
+       title="Language + SES", 
+       caption="Source: nlschools")
+```
+
+```{r}
+sqldf("SELECT 
+          DISTINCT(`class`) class,
+          COUNT(`class`) count
+      FROM nlschools GROUP BY `class`")
 ```
 
 ### Conclusion
