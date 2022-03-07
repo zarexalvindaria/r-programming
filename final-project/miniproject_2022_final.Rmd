@@ -74,63 +74,153 @@ To get a glimpse of what the dataset is about, the Analytics Practitioner determ
 The below tables show the summary of the nlschools dataset.
 
 ```{r}
-# Summary
-summary <- data %>%
-    group_by(class, GS, COMB) %>%
-    summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
-print(as_tibble(summary), n=133)
+# Dataset Summary
+summary(nlschools)
 
+
+# Summary
+# summary <- data %>%
+#     group_by(class, GS, COMB) %>%
+#     summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
+# print(as_tibble(summary), n=133)
+# # 
 # Average Language Exam per class
-avg.class.lang <- data %>%
-    group_by(COMB) %>%
-    summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
-print(as_tibble(avg.class.lang), n=100)
+# avg.class.lang <- data %>%
+#     group_by(COMB) %>%
+#     summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
+# print(as_tibble(avg.class.lang), n=100)
 ```
 
 
 #### Body
-Now, to expound on the summary dataset, the Analytics Practitioner will answer the questions posed with the help of graphs and charts.
+Now, to expound on the summary of the dataset, the Analytics Practitioner will answer the questions posed with the help of graphs and charts.
 
 
 1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
 
 ```{r}
-# IQ Discrepancy by Class
+#IQ Discrepancy by Class
 sd.class.lang <- data %>%
-    group_by(class) %>%
+    group_by(class, GS) %>%
     summarise(sd.iq = sd(IQ), sd.ses = sd(SES), sd.lang = sd(lang))
-print(as_tibble(sd.class.lang), n=100)
+print(as_tibble(sd.class.lang),
+n=133
+)
 ```
 
-```{r}
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class name and Average IQ
-class.iq <- ggplot(aes(x = class, y = IQ), data = nlschools)
-class.iq + 
-  stat_summary(fun = "mean", geom = "bar") +
-    labs(
-       x="class",
-       y="IQ",
-       title="Average Student IQ by Class", 
-       caption="Source: nlschools")
+# class.iq <- ggplot(aes(x = class, y = IQ), data = nlschools)
+q <- c(.25, .5, .75, 1)
+
+ggplot(nlschools, aes(x = lang)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "Language Exam Test Score")
+
+ggplot(nlschools, aes(x = IQ)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "IQ")
+
+# ggplot(nlschools, aes(x = class)) +
+#   geom_histogram(col = "black", binwidth=.5) +
+#   labs(x = "class")
+
+ggplot(nlschools, aes(x = SES)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "SES")
+
 ```
 
-```{r}
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # language score and verbal IQ
-class.ses <- ggplot(aes(x = class, y = SES), data = nlschools)
-class.ses + 
-  stat_summary(fun = "mean", geom = "bar") +
-    labs(
-       x="class",
-       y="SES",
-       title="Average Student SES by Class", 
-       caption="Source: nlschools")
+#class.ses <- ggplot(aes(x = class, y = SES), data = nlschools)
+#class.ses + 
+#  stat_summary(fun = "mean", geom = "bar") +
+#    labs(
+#       x="class",
+#       y="SES",
+#       title="Average Student SES by Class", 
+#       caption="Source: nlschools")
+
+
+# calculate quantiles by group
+data %>% group_by(class) %>%
+  summarize(first=quantile(sd(lang), probs = q[1]),
+            second=quantile(sd(lang), probs = q[2]),
+            third=quantile(sd(lang), probs = q[3])
+            )
+ggplot(data, aes(sample = lang)) +
+  stat_qq() +
+  stat_qq_line()
+
+# stat_qq() +
+#   stat_qq_line()
 ```
-
-
-
 
 2. When did students perform better or worse on the language exam? Describe which variables had the most important effects.
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+data <- nlschools
+
+# language score, verbal IQ by class
+p1 <- ggplot(data, mapping = aes(x = lang , y = IQ, colour = IQ))
+
+p1 + 
+  geom_point(aes()) +
+  geom_smooth(show.legend = TRUE, method = 'gam') +
+    labs( x="Language Score",
+       y="IQ",
+       title="Language Score and IQ", 
+       caption="Source: nlschools")
+
+# language score, verbal IQ by COMB
+p2 <- ggplot(data, mapping = aes(x = lang , y = GS, colour = GS))
+p2 + 
+  geom_point(aes()) +
+  geom_smooth(show.legend = TRUE, method = 'gam') +
+  # stat_qq() +
+  # stat_qq_line() +
+    labs( x="Language Score",
+       y="GS",
+       title="Language Score + GS", 
+       caption="Source: nlschools")
+
+
+# language score, SES
+p3 <- ggplot(data, mapping = aes(x = lang , y = SES, colour = SES))
+p3 + 
+  geom_point(aes()) +
+  geom_smooth() +
+  # stat_qq() +
+  # stat_qq_line() +
+    labs( x="Language Score",
+       y="SES",
+       title="Language Score + SES", 
+       caption="Source: nlschools")
+
+# language score, verbal IQ by COMB
+# p3 <- ggplot(data, mapping = aes(fill=lang, x = lang , y = COMB, colour = COMB))
+# p3 + 
+#   geom_point(aes()) +
+#   geom_smooth() +
+#     labs( x="Language Score",
+#        y="COMB",
+#        title="Language Score + COMB", 
+#        caption="Source: nlschools")
+
+#Average language exam test score by COMB
+ggplot(aes(fill=lang, x = COMB, y = lang), data = data) + 
+  geom_bar(position="dodge", stat="identity")
+    
+ggplot(aes(fill=lang, x = COMB, y = lang), data = data) + 
+  stat_summary(fun = "mean", geom = "bar")
+
+sd.class.lang <- data %>%
+    group_by(COMB) %>%
+    dplyr::summarise(avg.lang = mean(lang), sd.lang = sd(lang), count.GS = length(GS), count.lang = length(lang))
+sd.class.lang  
+
+```
 
 
 
