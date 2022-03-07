@@ -123,8 +123,9 @@ knitr::kable(top.IQ.sd,
 # Lowest standard deviation in IQ
 btm.IQ.sd <- tail(select(
   as_tibble(class.disc %>% 
-  arrange(desc(sd.IQ))),
-  sd.IQ, avg.IQ, class, GS, COMB, avg.lang, sd.lang , avg.SES, sd.SES), n=5)
+    arrange(desc(sd.IQ))),
+  sd.IQ, avg.IQ, class, GS, COMB, avg.lang, sd.lang , avg.SES, sd.SES), n=5) %>%     
+    arrange(sd.IQ)
 
 knitr::kable(btm.IQ.sd,
              caption = "Table 3: The classes with the lowest standard deviation in IQ",
@@ -147,8 +148,10 @@ knitr::kable(top.SES.sd,
 # Lowest standard deviation in SES
 btm.SES.sd <- tail(select(
   as_tibble(class.disc %>% 
-  arrange(desc(sd.SES))),
-  sd.SES, avg.SES, class, GS, COMB, avg.lang, sd.lang , avg.IQ, sd.IQ), n=5)
+    arrange(desc(sd.SES))),
+  sd.SES, avg.SES, class, GS, COMB, avg.lang, sd.lang , avg.IQ, sd.IQ), n=5) %>%
+    arrange(sd.SES)
+
 
 knitr::kable(btm.SES.sd,
              caption = "Table 5: The classes with the lowest standard deviation in SES",
@@ -173,58 +176,12 @@ knitr::kable(top.lang.scores,
 bottom.lang.scores <- tail(select(
   as_tibble(class.disc %>% 
     arrange(desc(avg.lang))),
-  avg.lang, sd.lang, class, GS, COMB, avg.IQ, sd.IQ, avg.SES, sd.SES), n=5)
+  avg.lang, sd.lang, class, GS, COMB, avg.IQ, sd.IQ, avg.SES, sd.SES), n=5) %>% 
+    arrange(avg.lang)
 
 knitr::kable(bottom.lang.scores,
              caption = "Table 3: The bottom classes with the lowest language scores",
              digits = 2)
-```
-
-
-Table 2 shows the top 5 classes with the highest number 
-
-
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the lowest number of students
-tail(as_tibble(class.disc %>%
-    arrange(desc(GS))), n=5)
-```
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the highest IQ Average
-print(as_tibble(class.disc %>%
-    arrange(desc(avg.IQ))), n=5)
-```
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the lowest IQ Average
-tail(as_tibble(class.disc %>%
-    arrange(desc(avg.IQ))), n=5)
-```
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the highest SES Average
-print(as_tibble(class.disc %>%
-    arrange(desc(avg.SES))), n=5)
-```
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the lowest SES Average
-tail(as_tibble(class.disc %>%
-    arrange(desc(avg.SES))), n=5)
-```
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the highest Language Score Average
-print(as_tibble(class.disc %>%
-    arrange(desc(avg.lang))), n=5)
-```
-
-```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
-# Class with the lowest Language Score Average
-tail(as_tibble(class.disc %>%
-    arrange(desc(avg.lang))), n=5)
 ```
 
 ```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
