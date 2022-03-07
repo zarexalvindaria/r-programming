@@ -139,7 +139,7 @@ p4 +
 ```{r}
 # language score and verbal IQ
 point <- geom_point(aes(colour = factor(COMB)))
-smoth <- geom_smooth(show.legend = TRUE, method = 'gam' , aes(colour = factor(COMB)))
+smooth <- geom_smooth(show.legend = TRUE, method = 'gam' , aes(colour = factor(COMB)))
 
 
 p1 + 
@@ -177,10 +177,103 @@ p3 +
 ```
 
 ```{r}
-sqldf("SELECT 
-          DISTINCT(`class`) class,
-          COUNT(`class`) count
-      FROM nlschools GROUP BY `class`")
+#sqldf("SELECT 
+          #DISTINCT(`class`) class,
+          #COUNT(`class`) count
+      #FROM nlschools GROUP BY `class`")
 ```
 
-### Conclusion
+```{r}
+# Barplot with mean
+#library(Hmisc)
+#ggplot(data=nlschools, mapping=aes(x=lang, y=IQ)) + 
+#  stat_summary(fun.data=mean_sdl, geom="bar")
+
+
+#Average language exam test score by COMB
+ggplot(aes(x = COMB, y = lang), data = nlschools) + stat_summary(fun = "mean", geom = "bar")
+
+sqldf("SELECT 
+          DISTINCT(COMB) COMB,
+          AVG(`lang`) lang
+      FROM nlschools GROUP BY `COMB`")
+
+
+
+
+#Average language exam test score by class id
+ggplot(aes(x = class, y = lang), data = nlschools) + stat_summary(fun = "mean", geom = "bar")
+
+sqldf("SELECT 
+          DISTINCT(class) class,
+          AVG(`lang`) lang
+      FROM nlschools GROUP BY `class`")
+      
+
+
+
+
+```
+
+# Actual Work
+
+```{r}
+library("MASS")
+#head(nlschools)
+library(ggplot2)
+library(dplyr)
+#library(sqldf)
+#?nlschools
+data <- nlschools
+
+# Average Language Exam
+avg.lang <- summarise(data, Mean = mean(lang))
+avg.lang
+
+# Average Language Exam per class
+avg.class.lang <-  data %>% group_by(class) %>% summarise(data, Mean = mean(lang))
+avg.class.lang
+
+
+#ggplot(aes(x = class, y = lang), data = nlschools) + stat_summary(fun = "mean", geom = "bar")
+
+# Average Language Exam Test Score per class
+sqldf("SELECT 
+          DISTINCT(class) class,
+          AVG(CAST(lang as real)) lang
+      FROM nlschools GROUP BY 1
+      ORDER BY 1 ASC")
+
+
+```
+
+##### Discrepancies in IQ by class
+```{r}
+class.iq <- ggplot(aes(x = class, y = IQ), data = nlschools)
+
+
+# language score and verbal IQ
+class.iq + 
+  stat_summary(fun = "mean", geom = "bar")
+    labs(
+       x="class",
+       y="IQ",
+       title="Student IQ by Class", 
+       caption="Source: nlschools")
+```
+
+
+# Discrepancies in SES by class
+```{r}
+class.iq <- ggplot(aes(x = class, y = SES), data = nlschools)
+
+
+# language score and verbal IQ
+class.iq + 
+  stat_summary(fun = "mean", geom = "bar")
+    labs(
+       x="class",
+       y="SES",
+       title="Student SES by Class", 
+       caption="Source: nlschools")
+```

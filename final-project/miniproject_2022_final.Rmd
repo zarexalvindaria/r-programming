@@ -1,0 +1,146 @@
+---
+title: ANLYTC3 Mini-Project
+Analytics Practitioner: "Zarex Alvin Daria"
+output: html_document
+---
+
+
+### Instructions 
+
+The data set `nlschools` (in the `MASS` library, use `data(nlschools, package = "MASS")` to load in the data) contains the following records for 2287 students in the Netherlands (see `?nlschools` for more information) 
+
+* `lang`: their test score on a language exam
+* `IQ`: their verbal IQ
+* `class`: the ID number for their classroom
+* `GS`: the number of students in each class
+* `SES`: the socio-economic status of their family
+* `COMB`: was the student in a multi-grade class? (0=no, 1=yes)
+
+Your task is to explore and describe this data set. You should use both models and visualization. You should use your judgement as to what are the most important aspects of the data to highlight; however, the following questions are of particular interest:
+
+1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
+2. When did students perform better or worse on the language exam? Describe which variables had the most important effects. 
+3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.
+
+Always think about what you are doing -- blindly replicating the lectures may not result in the best analysis! Every data set is different, so you may need to use your judgement on the right thing to do. Your goal is to understand the data as best as your can, particularly in regards to questions 1-3 above.
+
+NOTE: Since this is an observational study, we'll understand that any claims about causality should be taken mainly as speculation or hypothesis. Usage of language regarding the "effects" of a variable on the outcome of interest will be understood to be informal, so we won't penalize you. (This will probably make the report much easier to write.)
+
+### Presentation Requirements
+
+Your output should be this rmarkdown file, which should compile into a report that gives your analysis. 
+
+The report should be understandable. One possible outline is: 
+
+1. Intro: what are your main steps, and what are your findings?
+2. Analysis: Describe each step and why you did it, show the R code and results, then comment on the results.
+3. Conclusions: recap and summarize 
+
+Typically, it's best to do step 2 first, and then write step 1 and 3 after you are finished. Bulleted lists may be especially helpful for these parts. 
+
+Code should be clearly commented. All plots should be presentable and properly labeled. Mitigate overplotting whenever possible. When building a model, explain each step so that we know why you are doing it. 
+
+The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- no late days may be used. Submit this Rmd file on Canvas Don't submit additional files.
+
+### Report:
+
+```{r}
+library("MASS")
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+data <- nlschools
+
+#Count the number of rows in the dataset
+total.rows <- count(data)
+
+# Average Language Exam
+avg.lang <- mean(data$lang)
+
+# Standard Deviation in the Language Exam
+sd.lang <- sd(data$lang)
+
+```
+
+#### Introduction
+The dataset that the Analytics Practitioner will be working on is the nlschools dataset which is a study of 2,287 eighth-grade pupils (aged about 11) in 132 classes in 131 schools in the Netherlands conducted by Snijders and Bosker (1999).
+
+To get a glimpse of what the dataset is about, the Analytics Practitioner determined the average values of some attributes as detailed below:
+
+1. The dataset has `r total.rows` rows.
+2. The average language exam test score of all the students is `r avg.lang`.
+3. The standard deviation of the students' language exam is `r sd.lang`.
+
+The below tables show the summary of the nlschools dataset.
+
+```{r}
+# Summary
+summary <- data %>%
+    group_by(class, GS, COMB) %>%
+    summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
+print(as_tibble(summary), n=133)
+
+# Average Language Exam per class
+avg.class.lang <- data %>%
+    group_by(COMB) %>%
+    summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
+print(as_tibble(avg.class.lang), n=100)
+```
+
+
+#### Body
+Now, to expound on the summary dataset, the Analytics Practitioner will answer the questions posed with the help of graphs and charts.
+
+
+1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
+
+```{r}
+# IQ Discrepancy by Class
+sd.class.lang <- data %>%
+    group_by(class) %>%
+    summarise(sd.iq = sd(IQ), sd.ses = sd(SES), sd.lang = sd(lang))
+print(as_tibble(sd.class.lang), n=100)
+```
+
+```{r}
+# Class name and Average IQ
+class.iq <- ggplot(aes(x = class, y = IQ), data = nlschools)
+class.iq + 
+  stat_summary(fun = "mean", geom = "bar") +
+    labs(
+       x="class",
+       y="IQ",
+       title="Average Student IQ by Class", 
+       caption="Source: nlschools")
+```
+
+```{r}
+# language score and verbal IQ
+class.ses <- ggplot(aes(x = class, y = SES), data = nlschools)
+class.ses + 
+  stat_summary(fun = "mean", geom = "bar") +
+    labs(
+       x="class",
+       y="SES",
+       title="Average Student SES by Class", 
+       caption="Source: nlschools")
+```
+
+
+
+
+2. When did students perform better or worse on the language exam? Describe which variables had the most important effects.
+
+
+
+
+
+
+
+3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.
+
+
+
+
+#### Conclusion
+
