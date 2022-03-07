@@ -44,10 +44,10 @@ The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- n
 
 ### Report:
 
-```{r echo=FALSE}
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 library("MASS")
 library(ggplot2)
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 library(reshape2)
 data <- nlschools
 
@@ -59,7 +59,6 @@ avg.lang <- mean(data$lang)
 
 # Standard Deviation in the Language Exam
 sd.lang <- sd(data$lang)
-
 ```
 
 #### Introduction
@@ -73,66 +72,156 @@ To get a glimpse of what the dataset is about, the Analytics Practitioner determ
 
 The below tables show the summary of the nlschools dataset.
 
-```{r}
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Dataset Summary
-summary(nlschools)
+data.summary <- summary(nlschools)
 
-
-# Summary
-# summary <- data %>%
-#     group_by(class, GS, COMB) %>%
-#     summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
-# print(as_tibble(summary), n=133)
-# # 
-# Average Language Exam per class
-# avg.class.lang <- data %>%
-#     group_by(COMB) %>%
-#     summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
-# print(as_tibble(avg.class.lang), n=100)
+knitr::kable(data.summary,
+             caption = "Table 1: Summary of the Dataset",
+             digits = 2)
 ```
 
 
+
+Table 1 shows the summary of the dataset which details the following:
+
+1. The highest language exam score of a student (lang column) is 58, while its average is 40.93, and the lowest is 9.
+2. The highest student IQ (IQ column) is 18, while its average is 11.83, and the lowest is 4.
+3. The highest student count (GS column) in a class is 39, while its average is 26.51, and the lowest is 10.
+4. The highest socio-economic status (SES column) of a student is 50, while the average is 27.81, and the lowest is 10.
+5. There are a total of 629 students who are under a multi-grade class (COMB column), while there are 1,658 students who are not.
+
+
 #### Body
-Now, to expound on the summary of the dataset, the Analytics Practitioner will answer the questions posed with the help of graphs and charts.
+Now, to expound on the summary of the dataset, the Analytics Practitioner will answer the questions posed using tables and graphs.
 
 
 1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
 
-```{r}
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
 # Discrepancies by Class
 class.disc <- data %>%
-    group_by(class, GS) %>%
-    summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.ses = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang))
+    group_by(class, GS, COMB) %>%
+    summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.SES = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang))
+```
 
-# Class with the highest number of students
-head(select(
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Highest standard deviation in IQ
+top.IQ.sd <- head(select(
   as_tibble(class.disc %>% 
-    arrange(desc(GS))), class, GS, avg.lang, sd.lang), n=5)
+    arrange(desc(sd.IQ))),
+  sd.IQ, avg.IQ, class, GS, avg.lang, sd.lang , avg.SES, sd.SES), n=5)
 
+knitr::kable(top.IQ.sd,
+             caption = "Table 2: The classes with the highest standard deviation in IQ",
+             digits = 2)
+```
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Lowest standard deviation in IQ
+btm.IQ.sd <- tail(select(
+  as_tibble(class.disc %>% 
+  arrange(desc(sd.IQ))),
+  sd.IQ, avg.IQ, class, GS, COMB, avg.lang, sd.lang , avg.SES, sd.SES), n=5)
+
+knitr::kable(btm.IQ.sd,
+             caption = "Table 3: The classes with the lowest standard deviation in IQ",
+             digits = 2)
+```
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Highest standard deviation in SES
+top.SES.sd <- head(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(sd.SES))),
+  sd.SES, avg.SES, class, COMB, GS, avg.lang, sd.lang , avg.IQ, sd.IQ), n=5)
+
+knitr::kable(top.SES.sd,
+             caption = "Table 4: The classes with the highest standard deviation in SES",
+             digits = 2)
+```
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Lowest standard deviation in SES
+btm.SES.sd <- tail(select(
+  as_tibble(class.disc %>% 
+  arrange(desc(sd.SES))),
+  sd.SES, avg.SES, class, GS, COMB, avg.lang, sd.lang , avg.IQ, sd.IQ), n=5)
+
+knitr::kable(btm.SES.sd,
+             caption = "Table 5: The classes with the lowest standard deviation in SES",
+             digits = 2)
+```
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Class with the highest language scores
+top.lang.scores <- head(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(avg.lang))),
+  avg.lang, sd.lang, class, GS, COMB, avg.IQ, sd.IQ, avg.SES, sd.SES), n=5)
+
+knitr::kable(top.lang.scores,
+             caption = "Table 2: The top 5 classes with the highest language scores",
+             digits = 2)
+```
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Class with the highest language scores
+bottom.lang.scores <- tail(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(avg.lang))),
+  avg.lang, sd.lang, class, GS, COMB, avg.IQ, sd.IQ, avg.SES, sd.SES), n=5)
+
+knitr::kable(bottom.lang.scores,
+             caption = "Table 3: The bottom classes with the lowest language scores",
+             digits = 2)
+```
+
+
+Table 2 shows the top 5 classes with the highest number 
+
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the lowest number of students
 tail(as_tibble(class.disc %>%
     arrange(desc(GS))), n=5)
+```
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the highest IQ Average
 print(as_tibble(class.disc %>%
     arrange(desc(avg.IQ))), n=5)
+```
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the lowest IQ Average
 tail(as_tibble(class.disc %>%
     arrange(desc(avg.IQ))), n=5)
+```
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the highest SES Average
 print(as_tibble(class.disc %>%
     arrange(desc(avg.SES))), n=5)
+```
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the lowest SES Average
 tail(as_tibble(class.disc %>%
     arrange(desc(avg.SES))), n=5)
+```
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the highest Language Score Average
 print(as_tibble(class.disc %>%
     arrange(desc(avg.lang))), n=5)
+```
 
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
 # Class with the lowest Language Score Average
 tail(as_tibble(class.disc %>%
     arrange(desc(avg.lang))), n=5)

@@ -203,17 +203,6 @@ pre code {
 </div>
 <div id="report" class="section level3">
 <h3>Report:</h3>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:MASS&#39;:
-## 
-##     select</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
 <div id="introduction" class="section level4">
 <h4>Introduction</h4>
 <p>The dataset that the Analytics Practitioner will be working on is the nlschools dataset which is a study of 2,287 eighth-grade pupils (aged about 11) in 132 classes in 131 schools in the Netherlands conducted by Snijders and Bosker (1999).</p>
@@ -224,76 +213,543 @@ pre code {
 <li>The standard deviation of the students’ language exam is 9.003676.</li>
 </ol>
 <p>The below tables show the summary of the nlschools dataset.</p>
-<pre class="r"><code># Dataset Summary
-summary(nlschools)</code></pre>
-<pre><code>##       lang             IQ            class            GS             SES       
-##  Min.   : 9.00   Min.   : 4.00   15580  :  33   Min.   :10.00   Min.   :10.00  
-##  1st Qu.:35.00   1st Qu.:10.50   5480   :  31   1st Qu.:23.00   1st Qu.:20.00  
-##  Median :42.00   Median :12.00   15980  :  31   Median :27.00   Median :27.00  
-##  Mean   :40.93   Mean   :11.83   16180  :  31   Mean   :26.51   Mean   :27.81  
-##  3rd Qu.:48.00   3rd Qu.:13.00   18380  :  31   3rd Qu.:31.00   3rd Qu.:35.00  
-##  Max.   :58.00   Max.   :18.00   5580   :  30   Max.   :39.00   Max.   :50.00  
-##                                  (Other):2100                                  
-##  COMB    
-##  0:1658  
-##  1: 629  
-##          
-##          
-##          
-##          
-## </code></pre>
-<pre class="r"><code># Summary
-# summary &lt;- data %&gt;%
-#     group_by(class, GS, COMB) %&gt;%
-#     summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
-# print(as_tibble(summary), n=133)
-# # 
-# Average Language Exam per class
-# avg.class.lang &lt;- data %&gt;%
-#     group_by(COMB) %&gt;%
-#     summarise(avg.lang = mean(lang), avg.iq = mean(IQ), avg.ses = mean(SES))
-# print(as_tibble(avg.class.lang), n=100)</code></pre>
+<table>
+<caption>Table 1: Summary of the Dataset</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">lang</th>
+<th align="left">IQ</th>
+<th align="left">class</th>
+<th align="left">GS</th>
+<th align="left">SES</th>
+<th align="left">COMB</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Min. : 9.00</td>
+<td align="left">Min. : 4.00</td>
+<td align="left">15580 : 33</td>
+<td align="left">Min. :10.00</td>
+<td align="left">Min. :10.00</td>
+<td align="left">0:1658</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">1st Qu.:35.00</td>
+<td align="left">1st Qu.:10.50</td>
+<td align="left">5480 : 31</td>
+<td align="left">1st Qu.:23.00</td>
+<td align="left">1st Qu.:20.00</td>
+<td align="left">1: 629</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">Median :42.00</td>
+<td align="left">Median :12.00</td>
+<td align="left">15980 : 31</td>
+<td align="left">Median :27.00</td>
+<td align="left">Median :27.00</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Mean :40.93</td>
+<td align="left">Mean :11.83</td>
+<td align="left">16180 : 31</td>
+<td align="left">Mean :26.51</td>
+<td align="left">Mean :27.81</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">3rd Qu.:48.00</td>
+<td align="left">3rd Qu.:13.00</td>
+<td align="left">18380 : 31</td>
+<td align="left">3rd Qu.:31.00</td>
+<td align="left">3rd Qu.:35.00</td>
+<td align="left">NA</td>
+</tr>
+<tr class="even">
+<td align="left"></td>
+<td align="left">Max. :58.00</td>
+<td align="left">Max. :18.00</td>
+<td align="left">5580 : 30</td>
+<td align="left">Max. :39.00</td>
+<td align="left">Max. :50.00</td>
+<td align="left">NA</td>
+</tr>
+<tr class="odd">
+<td align="left"></td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">(Other):2100</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+<td align="left">NA</td>
+</tr>
+</tbody>
+</table>
+<p>Table 1 shows the summary of the dataset which details the following:</p>
+<ol style="list-style-type: decimal">
+<li>The highest language exam score of a student (lang column) is 58, while its average is 40.93, and the lowest is 9.</li>
+<li>The highest student IQ (IQ column) is 18, while its average is 11.83, and the lowest is 4.</li>
+<li>The highest student count (GS column) in a class is 39, while its average is 26.51, and the lowest is 10.</li>
+<li>The highest socio-economic status (SES column) of a student is 50, while the average is 27.81, and the lowest is 10.</li>
+<li>There are a total of 629 students who are under a multi-grade class (COMB column), while there are 1,658 students who are not.</li>
+</ol>
 </div>
 <div id="body" class="section level4">
 <h4>Body</h4>
-<p>Now, to expound on the summary of the dataset, the Analytics Practitioner will answer the questions posed with the help of graphs and charts.</p>
+<p>Now, to expound on the summary of the dataset, the Analytics Practitioner will answer the questions posed using tables and graphs.</p>
 <ol style="list-style-type: decimal">
 <li>Are there discrepancies in <code>IQ</code> or <code>SES</code> in the different classes, or when grouping by multi-grade vs non-multi-grade classes?</li>
 </ol>
-<pre class="r"><code># Discrepancies by Class
-class.disc &lt;- data %&gt;%
-    group_by(class, GS) %&gt;%
-    summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.ses = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang))</code></pre>
-<pre><code>## `summarise()` has grouped output by &#39;class&#39;. You can override using the
-## `.groups` argument.</code></pre>
-<pre class="r"><code># Class with the highest number of students
-head(select(
-  as_tibble(class.disc %&gt;% 
-    arrange(desc(GS))), class, GS, avg.lang, sd.lang), n=5)</code></pre>
-<pre><code>## # A tibble: 5 x 4
-##   class    GS avg.lang sd.lang
-##   &lt;fct&gt; &lt;int&gt;    &lt;dbl&gt;   &lt;dbl&gt;
-## 1 15680    39     39      8.38
-## 2 19980    37     34.5    8.75
-## 3 24280    37     43.3    8.28
-## 4 16180    36     46.0    7.69
-## 5 1580     35     30.9   13.3</code></pre>
-<pre class="r"><code># Class with the lowest number of students
-tail(as_tibble(class.disc %&gt;%
-    arrange(desc(GS))), n=5)</code></pre>
+<table>
+<caption>Table 2: The classes with the highest standard deviation in IQ</caption>
+<thead>
+<tr class="header">
+<th align="right">sd.IQ</th>
+<th align="right">avg.IQ</th>
+<th align="left">class</th>
+<th align="right">GS</th>
+<th align="right">avg.lang</th>
+<th align="right">sd.lang</th>
+<th align="right">avg.SES</th>
+<th align="right">sd.SES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">3.52</td>
+<td align="right">9.75</td>
+<td align="left">12380</td>
+<td align="right">20</td>
+<td align="right">34.75</td>
+<td align="right">4.27</td>
+<td align="right">24.00</td>
+<td align="right">11.46</td>
+</tr>
+<tr class="even">
+<td align="right">3.42</td>
+<td align="right">13.40</td>
+<td align="left">2980</td>
+<td align="right">22</td>
+<td align="right">46.50</td>
+<td align="right">6.22</td>
+<td align="right">42.70</td>
+<td align="right">6.02</td>
+</tr>
+<tr class="odd">
+<td align="right">2.97</td>
+<td align="right">10.50</td>
+<td align="left">21480</td>
+<td align="right">27</td>
+<td align="right">32.52</td>
+<td align="right">8.58</td>
+<td align="right">23.05</td>
+<td align="right">10.15</td>
+</tr>
+<tr class="even">
+<td align="right">2.89</td>
+<td align="right">12.77</td>
+<td align="left">21880</td>
+<td align="right">27</td>
+<td align="right">47.29</td>
+<td align="right">5.50</td>
+<td align="right">35.04</td>
+<td align="right">9.00</td>
+</tr>
+<tr class="odd">
+<td align="right">2.81</td>
+<td align="right">12.12</td>
+<td align="left">13080</td>
+<td align="right">24</td>
+<td align="right">45.46</td>
+<td align="right">9.47</td>
+<td align="right">19.15</td>
+<td align="right">7.17</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Table 3: The classes with the lowest standard deviation in IQ</caption>
+<thead>
+<tr class="header">
+<th align="right">sd.IQ</th>
+<th align="right">avg.IQ</th>
+<th align="left">class</th>
+<th align="right">GS</th>
+<th align="left">COMB</th>
+<th align="right">avg.lang</th>
+<th align="right">sd.lang</th>
+<th align="right">avg.SES</th>
+<th align="right">sd.SES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.92</td>
+<td align="right">11.20</td>
+<td align="left">4480</td>
+<td align="right">25</td>
+<td align="left">1</td>
+<td align="right">36.40</td>
+<td align="right">8.87</td>
+<td align="right">19.27</td>
+<td align="right">4.27</td>
+</tr>
+<tr class="even">
+<td align="right">0.90</td>
+<td align="right">12.77</td>
+<td align="left">20680</td>
+<td align="right">11</td>
+<td align="left">0</td>
+<td align="right">45.64</td>
+<td align="right">6.04</td>
+<td align="right">22.27</td>
+<td align="right">5.27</td>
+</tr>
+<tr class="odd">
+<td align="right">0.90</td>
+<td align="right">12.56</td>
+<td align="left">21780</td>
+<td align="right">20</td>
+<td align="left">0</td>
+<td align="right">44.38</td>
+<td align="right">6.16</td>
+<td align="right">23.88</td>
+<td align="right">7.43</td>
+</tr>
+<tr class="even">
+<td align="right">0.88</td>
+<td align="right">11.97</td>
+<td align="left">9080</td>
+<td align="right">22</td>
+<td align="left">0</td>
+<td align="right">45.93</td>
+<td align="right">5.20</td>
+<td align="right">36.67</td>
+<td align="right">9.76</td>
+</tr>
+<tr class="odd">
+<td align="right">0.84</td>
+<td align="right">11.69</td>
+<td align="left">1680</td>
+<td align="right">28</td>
+<td align="left">1</td>
+<td align="right">41.50</td>
+<td align="right">6.30</td>
+<td align="right">29.38</td>
+<td align="right">5.29</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Table 4: The classes with the highest standard deviation in SES</caption>
+<thead>
+<tr class="header">
+<th align="right">sd.SES</th>
+<th align="right">avg.SES</th>
+<th align="left">class</th>
+<th align="left">COMB</th>
+<th align="right">GS</th>
+<th align="right">avg.lang</th>
+<th align="right">sd.lang</th>
+<th align="right">avg.IQ</th>
+<th align="right">sd.IQ</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">15.53</td>
+<td align="right">32.26</td>
+<td align="left">16080</td>
+<td align="left">0</td>
+<td align="right">26</td>
+<td align="right">43.17</td>
+<td align="right">9.52</td>
+<td align="right">11.76</td>
+<td align="right">2.69</td>
+</tr>
+<tr class="even">
+<td align="right">15.17</td>
+<td align="right">30.33</td>
+<td align="left">4980</td>
+<td align="left">1</td>
+<td align="right">28</td>
+<td align="right">34.56</td>
+<td align="right">11.95</td>
+<td align="right">10.94</td>
+<td align="right">2.13</td>
+</tr>
+<tr class="odd">
+<td align="right">15.01</td>
+<td align="right">28.00</td>
+<td align="left">23580</td>
+<td align="left">1</td>
+<td align="right">15</td>
+<td align="right">44.00</td>
+<td align="right">9.19</td>
+<td align="right">12.05</td>
+<td align="right">1.38</td>
+</tr>
+<tr class="even">
+<td align="right">14.64</td>
+<td align="right">32.50</td>
+<td align="left">22680</td>
+<td align="left">1</td>
+<td align="right">24</td>
+<td align="right">40.00</td>
+<td align="right">7.69</td>
+<td align="right">12.06</td>
+<td align="right">1.84</td>
+</tr>
+<tr class="odd">
+<td align="right">14.07</td>
+<td align="right">26.33</td>
+<td align="left">23780</td>
+<td align="left">1</td>
+<td align="right">19</td>
+<td align="right">40.13</td>
+<td align="right">7.01</td>
+<td align="right">11.17</td>
+<td align="right">2.16</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Table 5: The classes with the lowest standard deviation in SES</caption>
+<thead>
+<tr class="header">
+<th align="right">sd.SES</th>
+<th align="right">avg.SES</th>
+<th align="left">class</th>
+<th align="right">GS</th>
+<th align="left">COMB</th>
+<th align="right">avg.lang</th>
+<th align="right">sd.lang</th>
+<th align="right">avg.IQ</th>
+<th align="right">sd.IQ</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">3.95</td>
+<td align="right">19.15</td>
+<td align="left">24480</td>
+<td align="right">13</td>
+<td align="left">0</td>
+<td align="right">37.77</td>
+<td align="right">9.98</td>
+<td align="right">11.12</td>
+<td align="right">2.19</td>
+</tr>
+<tr class="even">
+<td align="right">3.90</td>
+<td align="right">20.15</td>
+<td align="left">6880</td>
+<td align="right">23</td>
+<td align="left">0</td>
+<td align="right">41.65</td>
+<td align="right">8.00</td>
+<td align="right">12.85</td>
+<td align="right">2.10</td>
+</tr>
+<tr class="odd">
+<td align="right">3.42</td>
+<td align="right">21.24</td>
+<td align="left">2180</td>
+<td align="right">19</td>
+<td align="left">0</td>
+<td align="right">38.76</td>
+<td align="right">9.73</td>
+<td align="right">11.76</td>
+<td align="right">2.09</td>
+</tr>
+<tr class="even">
+<td align="right">2.39</td>
+<td align="right">22.38</td>
+<td align="left">24380</td>
+<td align="right">15</td>
+<td align="left">1</td>
+<td align="right">41.62</td>
+<td align="right">7.17</td>
+<td align="right">10.38</td>
+<td align="right">1.33</td>
+</tr>
+<tr class="odd">
+<td align="right">0.00</td>
+<td align="right">10.00</td>
+<td align="left">18280</td>
+<td align="right">11</td>
+<td align="left">0</td>
+<td align="right">34.89</td>
+<td align="right">6.64</td>
+<td align="right">9.22</td>
+<td align="right">2.09</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Table 2: The top 5 classes with the highest language scores</caption>
+<thead>
+<tr class="header">
+<th align="right">avg.lang</th>
+<th align="right">sd.lang</th>
+<th align="left">class</th>
+<th align="right">GS</th>
+<th align="left">COMB</th>
+<th align="right">avg.IQ</th>
+<th align="right">sd.IQ</th>
+<th align="right">avg.SES</th>
+<th align="right">sd.SES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">49.19</td>
+<td align="right">4.93</td>
+<td align="left">22880</td>
+<td align="right">25</td>
+<td align="left">0</td>
+<td align="right">12.36</td>
+<td align="right">2.09</td>
+<td align="right">27.33</td>
+<td align="right">6.77</td>
+</tr>
+<tr class="even">
+<td align="right">49.14</td>
+<td align="right">5.25</td>
+<td align="left">14780</td>
+<td align="right">22</td>
+<td align="left">0</td>
+<td align="right">12.66</td>
+<td align="right">1.24</td>
+<td align="right">23.50</td>
+<td align="right">4.82</td>
+</tr>
+<tr class="odd">
+<td align="right">48.42</td>
+<td align="right">6.19</td>
+<td align="left">19380</td>
+<td align="right">31</td>
+<td align="left">1</td>
+<td align="right">12.67</td>
+<td align="right">1.54</td>
+<td align="right">25.00</td>
+<td align="right">8.45</td>
+</tr>
+<tr class="even">
+<td align="right">48.00</td>
+<td align="right">5.65</td>
+<td align="left">15280</td>
+<td align="right">17</td>
+<td align="left">0</td>
+<td align="right">12.38</td>
+<td align="right">1.24</td>
+<td align="right">40.24</td>
+<td align="right">6.84</td>
+</tr>
+<tr class="odd">
+<td align="right">47.44</td>
+<td align="right">5.82</td>
+<td align="left">13680</td>
+<td align="right">30</td>
+<td align="left">1</td>
+<td align="right">12.88</td>
+<td align="right">1.07</td>
+<td align="right">30.06</td>
+<td align="right">9.31</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>Table 3: The bottom classes with the lowest language scores</caption>
+<thead>
+<tr class="header">
+<th align="right">avg.lang</th>
+<th align="right">sd.lang</th>
+<th align="left">class</th>
+<th align="right">GS</th>
+<th align="left">COMB</th>
+<th align="right">avg.IQ</th>
+<th align="right">sd.IQ</th>
+<th align="right">avg.SES</th>
+<th align="right">sd.SES</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">29.30</td>
+<td align="right">13.28</td>
+<td align="left">25680</td>
+<td align="right">32</td>
+<td align="left">1</td>
+<td align="right">10.55</td>
+<td align="right">2.33</td>
+<td align="right">17.80</td>
+<td align="right">8.35</td>
+</tr>
+<tr class="even">
+<td align="right">28.43</td>
+<td align="right">6.97</td>
+<td align="left">25880</td>
+<td align="right">30</td>
+<td align="left">1</td>
+<td align="right">10.64</td>
+<td align="right">1.28</td>
+<td align="right">19.00</td>
+<td align="right">6.19</td>
+</tr>
+<tr class="odd">
+<td align="right">23.71</td>
+<td align="right">6.32</td>
+<td align="left">280</td>
+<td align="right">19</td>
+<td align="left">1</td>
+<td align="right">9.00</td>
+<td align="right">2.10</td>
+<td align="right">15.43</td>
+<td align="right">4.79</td>
+</tr>
+<tr class="even">
+<td align="right">23.50</td>
+<td align="right">4.78</td>
+<td align="left">4780</td>
+<td align="right">15</td>
+<td align="left">1</td>
+<td align="right">8.31</td>
+<td align="right">2.39</td>
+<td align="right">18.12</td>
+<td align="right">5.79</td>
+</tr>
+<tr class="odd">
+<td align="right">20.00</td>
+<td align="right">6.63</td>
+<td align="left">10380</td>
+<td align="right">29</td>
+<td align="left">1</td>
+<td align="right">6.75</td>
+<td align="right">2.50</td>
+<td align="right">13.75</td>
+<td align="right">4.79</td>
+</tr>
+</tbody>
+</table>
+<p>Table 2 shows the top 5 classes with the highest number</p>
 <pre><code>## # A tibble: 5 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 24480    13  11.1  2.19     19.2   3.95     37.8    9.98
 ## 2 4082     11  13.1  2.07     28.3   9.83     45.2    6.18
 ## 3 18280    11   9.22 2.09     10     0        34.9    6.64
 ## 4 20680    11  12.8  0.905    22.3   5.27     45.6    6.04
 ## 5 17980    10  11.2  1.33     14.5   5.05     30.2    8.93</code></pre>
-<pre class="r"><code># Class with the highest IQ Average
-print(as_tibble(class.disc %&gt;%
-    arrange(desc(avg.IQ))), n=5)</code></pre>
 <pre><code>## # A tibble: 133 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 9480     25   13.7  2.40    34.7   9.88     47      6.13
 ## 2 6280     26   13.6  2.15    36.7  10.5      46.8    5.22
@@ -301,22 +757,16 @@ print(as_tibble(class.disc %&gt;%
 ## 4 19780    35   13.6  1.83    27.2   4.79     45.3    7.79
 ## 5 2980     22   13.4  3.42    42.7   6.02     46.5    6.22
 ## # ... with 128 more rows</code></pre>
-<pre class="r"><code># Class with the lowest IQ Average
-tail(as_tibble(class.disc %&gt;%
-    arrange(desc(avg.IQ))), n=5)</code></pre>
 <pre><code>## # A tibble: 5 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 1280     31   9.43  1.25    29.5   9.46     30.9    6.97
 ## 2 18280    11   9.22  2.09    10     0        34.9    6.64
 ## 3 280      19   9     2.10    15.4   4.79     23.7    6.32
 ## 4 4780     15   8.31  2.39    18.1   5.79     23.5    4.78
 ## 5 10380    29   6.75  2.5     13.8   4.79     20      6.63</code></pre>
-<pre class="r"><code># Class with the highest SES Average
-print(as_tibble(class.disc %&gt;%
-    arrange(desc(avg.SES))), n=5)</code></pre>
 <pre><code>## # A tibble: 133 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 2980     22   13.4  3.42    42.7   6.02     46.5    6.22
 ## 2 5480     32   13.0  1.83    41.1   9.11     45.8    7.34
@@ -324,22 +774,16 @@ print(as_tibble(class.disc %&gt;%
 ## 4 15280    17   12.4  1.24    40.2   6.84     48      5.65
 ## 5 5780     31   12.0  1.94    39.2   8.03     41.6    7.98
 ## # ... with 128 more rows</code></pre>
-<pre class="r"><code># Class with the lowest SES Average
-tail(as_tibble(class.disc %&gt;%
-    arrange(desc(avg.SES))), n=5)</code></pre>
 <pre><code>## # A tibble: 5 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 10980    33  10.8   2.67    14.8   4.83     33.2    6.98
 ## 2 17980    10  11.2   1.33    14.5   5.05     30.2    8.93
 ## 3 180      29  10.3   2.56    13.8   4.70     36.4    8.76
 ## 4 10380    29   6.75  2.5     13.8   4.79     20      6.63
 ## 5 18280    11   9.22  2.09    10     0        34.9    6.64</code></pre>
-<pre class="r"><code># Class with the highest Language Score Average
-print(as_tibble(class.disc %&gt;%
-    arrange(desc(avg.lang))), n=5)</code></pre>
 <pre><code>## # A tibble: 133 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 22880    25   12.4  2.09    27.3   6.77     49.2    4.93
 ## 2 14780    22   12.7  1.24    23.5   4.82     49.1    5.25
@@ -347,11 +791,8 @@ print(as_tibble(class.disc %&gt;%
 ## 4 15280    17   12.4  1.24    40.2   6.84     48      5.65
 ## 5 13680    30   12.9  1.07    30.1   9.31     47.4    5.82
 ## # ... with 128 more rows</code></pre>
-<pre class="r"><code># Class with the lowest Language Score Average
-tail(as_tibble(class.disc %&gt;%
-    arrange(desc(avg.lang))), n=5)</code></pre>
 <pre><code>## # A tibble: 5 x 8
-##   class    GS avg.IQ sd.IQ avg.SES sd.ses avg.lang sd.lang
+##   class    GS avg.IQ sd.IQ avg.SES sd.SES avg.lang sd.lang
 ##   &lt;fct&gt; &lt;int&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 25680    32  10.6   2.33    17.8   8.35     29.3   13.3 
 ## 2 25880    30  10.6   1.28    19     6.19     28.4    6.97
