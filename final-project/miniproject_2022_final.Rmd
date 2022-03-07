@@ -44,7 +44,7 @@ The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- n
 
 ### Report:
 
-```{r}
+```{r echo=FALSE}
 library("MASS")
 library(ggplot2)
 library(dplyr)
@@ -99,13 +99,43 @@ Now, to expound on the summary of the dataset, the Analytics Practitioner will a
 1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
 
 ```{r}
-#IQ Discrepancy by Class
-sd.class.lang <- data %>%
+# Discrepancies by Class
+class.disc <- data %>%
     group_by(class, GS) %>%
-    summarise(sd.iq = sd(IQ), sd.ses = sd(SES), sd.lang = sd(lang))
-print(as_tibble(sd.class.lang),
-n=133
-)
+    summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.ses = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang))
+
+# Class with the highest number of students
+head(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(GS))), class, GS, avg.lang, sd.lang), n=5)
+
+# Class with the lowest number of students
+tail(as_tibble(class.disc %>%
+    arrange(desc(GS))), n=5)
+
+# Class with the highest IQ Average
+print(as_tibble(class.disc %>%
+    arrange(desc(avg.IQ))), n=5)
+
+# Class with the lowest IQ Average
+tail(as_tibble(class.disc %>%
+    arrange(desc(avg.IQ))), n=5)
+
+# Class with the highest SES Average
+print(as_tibble(class.disc %>%
+    arrange(desc(avg.SES))), n=5)
+
+# Class with the lowest SES Average
+tail(as_tibble(class.disc %>%
+    arrange(desc(avg.SES))), n=5)
+
+# Class with the highest Language Score Average
+print(as_tibble(class.disc %>%
+    arrange(desc(avg.lang))), n=5)
+
+# Class with the lowest Language Score Average
+tail(as_tibble(class.disc %>%
+    arrange(desc(avg.lang))), n=5)
 ```
 
 ```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
@@ -121,9 +151,9 @@ ggplot(nlschools, aes(x = IQ)) +
   geom_histogram(col = "black", binwidth=.5) +
   labs(x = "IQ")
 
-# ggplot(nlschools, aes(x = class)) +
-#   geom_histogram(col = "black", binwidth=.5) +
-#   labs(x = "class")
+ggplot(nlschools, aes(x = GS)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "GS")
 
 ggplot(nlschools, aes(x = SES)) +
   geom_histogram(col = "black", binwidth=.5) +
@@ -142,19 +172,6 @@ ggplot(nlschools, aes(x = SES)) +
 #       title="Average Student SES by Class", 
 #       caption="Source: nlschools")
 
-
-# calculate quantiles by group
-data %>% group_by(class) %>%
-  summarize(first=quantile(sd(lang), probs = q[1]),
-            second=quantile(sd(lang), probs = q[2]),
-            third=quantile(sd(lang), probs = q[3])
-            )
-ggplot(data, aes(sample = lang)) +
-  stat_qq() +
-  stat_qq_line()
-
-# stat_qq() +
-#   stat_qq_line()
 ```
 
 2. When did students perform better or worse on the language exam? Describe which variables had the most important effects.
@@ -217,14 +234,14 @@ ggplot(aes(fill=lang, x = COMB, y = lang), data = data) +
 
 sd.class.lang <- data %>%
     group_by(COMB) %>%
-    dplyr::summarise(avg.lang = mean(lang), sd.lang = sd(lang), count.GS = length(GS), count.lang = length(lang))
+    dplyr::summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.ses = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang), count.lang = length(lang))
 sd.class.lang  
 
+# sd.class.lang <- data %>%
+#     group_by(class, GS) %>%
+#     summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.ses = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang))
+
 ```
-
-
-
-
 
 
 3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.
