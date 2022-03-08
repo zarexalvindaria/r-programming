@@ -1,0 +1,345 @@
+---
+title: "ANLYTC3 Mini-Project"
+Analytics Practitioner: Zarex Alvin Daria
+output:
+  html_document: default
+---
+
+
+### Instructions 
+
+The data set `nlschools` (in the `MASS` library, use `data(nlschools, package = "MASS")` to load in the data) contains the following records for 2287 students in the Netherlands (see `?nlschools` for more information) 
+
+* `lang`: their test score on a language exam
+* `IQ`: their verbal IQ
+* `class`: the ID number for their classroom
+* `GS`: the number of students in each class
+* `SES`: the socio-economic status of their family
+* `COMB`: was the student in a multi-grade class? (0=no, 1=yes)
+
+Your task is to explore and describe this data set. You should use both models and visualization. You should use your judgement as to what are the most important aspects of the data to highlight; however, the following questions are of particular interest:
+
+1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?
+2. When did students perform better or worse on the language exam? Describe which variables had the most important effects. 
+3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.
+
+Always think about what you are doing -- blindly replicating the lectures may not result in the best analysis! Every data set is different, so you may need to use your judgement on the right thing to do. Your goal is to understand the data as best as your can, particularly in regards to questions 1-3 above.
+
+NOTE: Since this is an observational study, we'll understand that any claims about causality should be taken mainly as speculation or hypothesis. Usage of language regarding the "effects" of a variable on the outcome of interest will be understood to be informal, so we won't penalize you. (This will probably make the report much easier to write.)
+
+### Presentation Requirements
+
+Your output should be this rmarkdown file, which should compile into a report that gives your analysis. 
+
+The report should be understandable. One possible outline is: 
+
+1. Intro: what are your main steps, and what are your findings?
+2. Analysis: Describe each step and why you did it, show the R code and results, then comment on the results.
+3. Conclusions: recap and summarize 
+
+Typically, it's best to do step 2 first, and then write step 1 and 3 after you are finished. Bulleted lists may be especially helpful for these parts. 
+
+Code should be clearly commented. All plots should be presentable and properly labeled. Mitigate overplotting whenever possible. When building a model, explain each step so that we know why you are doing it. 
+
+The due date is 11:59pm EST June 28, 2019 (Friday). This is a hard deadline -- no late days may be used. Submit this Rmd file on Canvas Don't submit additional files.
+
+### Report:
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+library("MASS")
+library(ggplot2)
+library(dplyr, warn.conflicts = FALSE)
+library(reshape2)
+data <- nlschools
+
+#Count the number of rows in the dataset
+total.rows <- count(data)
+
+# Average Language Exam
+avg.lang <- mean(data$lang)
+
+# Standard Deviation in the Language Exam
+sd.lang <- sd(data$lang)
+```
+
+#### Introduction
+The dataset that the Analytics Practitioner will be working on is the nlschools dataset which is a study of 2,287 eighth-grade pupils (aged about 11) in 132 classes in 131 schools in the Netherlands conducted by Snijders and Bosker (1999).
+
+To get a glimpse of what the dataset is about, the Analytics Practitioner determined the average values of some attributes as detailed below:
+
+1. The dataset has `r total.rows` rows.
+2. The average language exam test score of all the students is `r avg.lang`.
+3. The standard deviation of the students' language exam is `r sd.lang`.
+
+The below tables show the attribute summary of the nlschools dataset.
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Dataset Summary
+data.summary <- summary(nlschools)
+
+knitr::kable(data.summary,
+             caption = "Table 1: Summary of the Dataset",
+             digits = 2)
+```
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+ggplot(nlschools, aes(x = lang)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "Figure 1. Language Exam Test Score Histogram")
+
+ggplot(nlschools, aes(x = IQ)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "Figure 2. Student IQ Histogram")
+
+ggplot(nlschools, aes(x = GS)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "Figure 3. Student group Histogram")
+
+ggplot(nlschools, aes(x = SES)) +
+  geom_histogram(col = "black", binwidth=.5) +
+  labs(x = "Figure 4. Student Socio-economic Status Histogram")
+```
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# language score and verbal IQ
+class.ses <- ggplot(aes(x = class, y = SES), data = nlschools)
+class.ses +
+ stat_summary(fun = "mean", geom = "bar") +
+   labs(
+      x="class",
+      y="SES",
+      title="Figure 5. Average Student SES by Class",
+      caption="Source: nlschools")
+```
+
+Table 1 and Figures 1-5 show the summary of the dataset which details the following:
+
+1. The highest language exam score of a student (lang column) is 58, while its average is 40.93, and the lowest is 9.
+2. The highest student IQ (IQ column) is 18, while its average is 11.83, and the lowest is 4.
+3. The highest student count (GS column) in a class is 39, while its average is 26.51, and the lowest is 10.
+4. The highest socio-economic status (SES column) of a student is 50, while the average is 27.81, and the lowest is 10.
+5. There are a total of 629 students who are under a multi-grade class (COMB column), while there are 1,658 students who are not.
+
+
+#### Body
+To expound on the summary of the dataset, the Analytics Practitioner will answer the questions posed using tables and graphs.
+
+__1. Are there discrepancies in `IQ` or `SES` in the different classes, or when grouping by multi-grade vs non-multi-grade classes?__
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Suppress summarise info
+options(dplyr.summarise.inform = FALSE)
+# Discrepancies by Class
+class.disc <- data %>%
+    group_by(class, COMB, GS) %>%
+    summarise(avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.SES = sd(SES), avg.lang = mean(lang), sd.lang = sd(lang))
+```
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Highest standard deviation in IQ
+top.IQ.sd <- head(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(sd.IQ))),
+  sd.IQ, avg.IQ, class, COMB, GS, avg.lang, sd.lang , avg.SES, sd.SES), n=10)
+
+knitr::kable(top.IQ.sd,
+             caption = "Table 2: The classes with the highest standard deviation in IQ",
+             digits = 2)
+```
+
+As seen in Table 2, the highest standard deviation in the students' IQ is class 12380 with 3.52 standard deviation and an average language score of 34.75. The second class with the highest standard deviation is class 2980 with 3.42 standard deviation and 46.50 average language score. As seen in Table 2, the top 2 classes with the highest deviation in IQ are those in multi-grade classes.
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Lowest standard deviation in IQ
+btm.IQ.sd <- tail(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(sd.IQ))),
+  sd.IQ, avg.IQ, class, COMB, GS, avg.lang, sd.lang , avg.SES, sd.SES
+  ), n=10) %>%     
+    arrange(sd.IQ)
+
+knitr::kable(btm.IQ.sd,
+             caption = "Table 3: The classes with the lowest standard deviation in IQ",
+             digits = 2)
+```
+
+As seen in Table 3, the class with the lowest standard deviation in IQ is class 1680 which is a multi-grade class and has an average IQ of 11.69. It also has an average language score of 41.50. 
+
+It can be inferred in Tables 2 and 3 that the lower the standard deviation in IQ is, the higher the language test score of the students are. This can be seen in the Table 3 which shows the classes having the lowest standard deviation and the said table shows high test scores.
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Highest standard deviation in SES
+top.SES.sd <- head(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(sd.SES))),
+  sd.SES, avg.SES, class, COMB, GS, avg.lang, sd.lang , avg.IQ, sd.IQ), n=10)
+
+knitr::kable(top.SES.sd,
+             caption = "Table 4: The classes with the highest standard deviation in SES",
+             digits = 2)
+```
+
+Table 4 shows the classes with the highest standard deviation in socio-economic status (SES) of the students. The highest standard deviation in SES is class 16080 which has an average SES of 32.26 and is not a multi-grade class.
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Lowest standard deviation in SES
+btm.SES.sd <- tail(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(sd.SES))),
+  sd.SES, avg.SES, class, COMB, GS, avg.lang, sd.lang , avg.IQ, sd.IQ), n=10) %>%
+    arrange(sd.SES)
+
+
+knitr::kable(btm.SES.sd,
+             caption = "Table 5: The classes with the lowest standard deviation in SES",
+             digits = 2)
+```
+
+Table 5 shows the classes with the lowest standard deviation in SES. Class 18280 has 0 SES, which is the lowest one. The said class has an average SES of 10 and has 11 students under the class.
+
+It can be inferred in Tables 4 and 5 that the higher the standard deviation in SES is, the higher the average language test score of the class is.
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Class with the highest language scores
+top.lang.scores <- head(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(avg.lang))),
+  avg.lang, sd.lang, class, COMB, GS, avg.IQ, sd.IQ, avg.SES, sd.SES), n=10)
+
+knitr::kable(top.lang.scores,
+             caption = "Table 6: The classes with the highest language test scores",
+             digits = 2)
+```
+
+Table 6 shows the classes with the highest language scores. It can be seen that class 22880 has the highest average language test score and has 4.93 standard deviation in the language test scores. The table also shows that the the class is not a multi-grade class.
+
+It can be inferred in Table 6 that the classes with the highest test scores have student counts not lower than 15.
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+# Class with the highest language scores
+bottom.lang.scores <- tail(select(
+  as_tibble(class.disc %>% 
+    arrange(desc(avg.lang))),
+  avg.lang, sd.lang, class, COMB, GS, avg.IQ, sd.IQ, avg.SES, sd.SES), n=10) %>% 
+    arrange(avg.lang)
+
+knitr::kable(bottom.lang.scores,
+             caption = "Table 7: The classes with the lowest language test scores",
+             digits = 2)
+```
+
+Table 7 shows the classes with the lowest language scores. It can be seen that class 10380 has the lowest language test score average and the said class is multi-graded. The average IQ of the students under the class is 6.75 which is lower than 11.83--the overall average of the dataset.
+
+It can be inferred from the table that the students enrolled in multi-grade class has lower language test scores. 
+
+
+__2. When did students perform better or worse on the language exam? Describe which variables had the most important effects.__
+
+```{r echo=FALSE, fig.show="hold", cache=TRUE}
+data <- nlschools
+
+# language score, verbal IQ by class
+p1 <- ggplot(data, mapping = aes(x = lang , y = IQ, colour = IQ))
+
+p1 + 
+  geom_point(aes()) +
+    geom_smooth(stat = 'smooth', color = 'Red', method = 'gam', formula = y ~ s(x, bs = "cs")) +
+    labs( x="Language Score",
+       y="IQ",
+       title="Figure 6. Language Score and IQ", 
+       caption="Source: nlschools")
+```
+
+Figure 6 shows that the higher the IQ of the student is, the higher the student's language test score is. Meaning, the student IQ is directly proportional with their language test score.
+
+
+```{r echo=FALSE, fig.show="hold", cache=TRUE}
+# language score, verbal IQ by COMB
+options(warn=-1)
+p2 <- ggplot(data, mapping = aes(x = lang , y = GS, colour = GS))
+
+p2 + 
+  geom_point(aes()) +
+  geom_smooth(stat = 'smooth', color = 'Red', method = 'gam', formula = y ~ s(x, bs = "cs")) +
+    labs( x="Language Score",
+       y="GS",
+       title="Figure 7. Language Score and Student Group", 
+       caption="Source: nlschools")
+
+```
+
+Figure 7 shows that there is not much change in the language test score if the group of students is increased in a class.
+
+
+```{r echo=FALSE, fig.show="hold", cache=TRUE}
+# language score, SES
+p3 <- ggplot(data, mapping = aes(x = lang , y = SES, colour = SES))
+p3 + 
+  geom_point(aes()) +
+    geom_smooth(stat = 'smooth', color = 'Red', method = 'gam', formula = y ~ s(x, bs = "cs")) +
+    labs( x="Language Score",
+       y="SES",
+       title="Figure 8. Language Score and Socio-Economic Status of Student", 
+       caption="Source: nlschools")
+```
+
+Figure 8 shows that the higher the socio-economic status of the student is, the higher the language test score is. Hence, the socio-economic status (SES) is directly proportial with the language test score.
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+#Average language exam test score by COMB
+comb.lang.score <- data %>%
+    group_by(COMB) %>%
+    dplyr::summarise(avg.lang = mean(lang), sd.lang = sd(lang), avg.IQ = mean(IQ), sd.IQ = sd(IQ), avg.SES = mean(SES), sd.ses = sd(SES), count.lang = length(lang))
+
+knitr::kable(comb.lang.score,
+             caption = "Table 8: The average language score by COMB",
+             digits = 2)
+```
+
+
+```{r echo=FALSE, fig.height=2.2, fig.show="hold", fig.width=4, cache=TRUE, dpi=80}
+#Average language exam test score by COMB
+ggplot(aes(fill=lang, x = COMB, y = lang), data = data) + 
+  geom_bar(position="dodge", stat="identity") +
+  labs( x="Multi-Grade Students",
+       y="lang",
+       title="Figure 8. Multi-Grade Students Distribution")
+    
+ggplot(aes(fill=lang, x = COMB, y = lang), data = data) + 
+  stat_summary(fun = "mean", geom = "bar") +
+  labs( x="Multi-Grade Students",
+       y="lang",
+       title="Figure 9. Multi-Grade Student Group")
+```
+
+Table 8, and Figures 8 and 9 show that the students under the non-multigrade class have higher average language test scores and lower standard deviation in their language test scores. It can also be seen that the non-multigrade class has lower count of students with low test scores compared with those in multi-grade class as shown in the shade of blue in Figure 8.
+
+
+
+__3. Do you think there are interactions in the effects of the variables on the language exam score? Speculate as to the cause of any such effects that you think should be included.__
+
+Based on what the graphs infer, yes, there are interactions between the variables. Some variables that have directly proportional impact on the language exam test score are the following:
+
+1. Student IQ - As seen on Figures 6, the language exam test score is directly proportional to the IQ of the student. This only means that IQ is the highest indicator of the language exam test score in the dataset. This is expected since a student's IQ is a big indicator of a student's test score in most subjects.
+2. Socio-economic status of the student - As seen on Figure 8, the socio-economic status of the student has direct correlation to the student's language exam test score. The Analytics Practitioner speculates that the richer the family of the student is, the more guidance and supplemental materials can be purchased by the family to aid the student's studies, particularly in language-related subjects
+3. COMB (whether the student is in multi-grade or not) - As seen in Tables 8 and Figures 8 and 9, students enrolled in a multi-grade classes have lower language exam test scores compared to those who are not enrolled in a multi-grade class. It can be inferred from the graphs that the students are having difficulty maximizing their potential in the language subject if the teacher is handling multi-grade classes, which impacts the student's language test scores.
+
+#### Conclusion
+
+As a conclusion, the following can be inferred from the dataset:
+
+1. The IQ of the students enrolled in a class are directly proportional with their language test scores. 
+2. Those with high socio-economic status have higher language test scores.
+
+To maximize the language test scores of the students, the school can take the following action plans:
+
+1. Give scholarships to students with High IQ but low to average socio-economic status.
+2. Minimize or remove multi-grade classes from the curriculum so that the teacher can focus on a specific student group's development levels and needs. This is because the data shows that the students find it difficult to maximize their language test scores if they are enrolled in a multi-grade classes.
